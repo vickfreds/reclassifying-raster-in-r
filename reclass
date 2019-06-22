@@ -1,0 +1,39 @@
+TLS_Class<-raster("LCClasses.tif")
+plot(TLS_Class)#ol=TLS_Class@data$Class_name, border=NA) #get rid of borders and color by CCode or class name
+
+####################
+#assign classes
+class.m<-c(0,1,1,
+           1,2,2,
+           2,3,3)
+
+class.m
+#reshape class.m to matrix with columns
+rcl.m=matrix(class.m,
+             ncol=3,
+             byrow = TRUE)
+rcl.m
+#reclassify the raster
+classes<-reclassify(TLS_Class,rcl.m)
+#plot outside plot region
+#make room for a legend
+par(xpd=FALSE, mar=c(5.1,4.1,4.1,4.5))
+plot(classes,
+     col=c("lightgreen","darkgreen","grey"),
+     main="TLS-derived LC Classes",
+     legend=FALSE)
+# allow legend to plot outside of bounds
+par(xpd=TRUE)
+# create the legend
+legend((par()$usr[2] + 20), 7232000,  # set x,y legend location
+       legend = c("Grass/Shrub", "Trees","Bare soil"),  # make sure the order matches the colors, next
+       fill = c("lightgreen","darkgreen","grey"),
+       bty="n") # turn off border
+
+#export classified Raster
+writeRaster(classes,
+            filename="TLS-derived LC Classes.tif",
+            format="GTiff",
+            options="COMPRESS=LZW",
+            overwrite = TRUE,
+            NAflag = -9999)
